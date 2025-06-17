@@ -1,0 +1,82 @@
+{
+  "common": {
+    "loading": "Loading..."
+  },
+
+  "error": {
+    "session_create_failed": "Failed to create session. Please try again.",
+    "session_load_failed": "Failed to load session",
+    "session_not_found": "Session not found",
+    "unknown_error": "Unknown error",
+    "player_name_taken": "Player name is already taken. Please choose another name."
+  },
+
+  "app": {
+    "title": "Poklet"
+  },
+
+  "theme": {
+    "dark": "Dark theme",
+    "light": "Light theme"
+  },
+  "main_page": {
+    "button": {
+      "create_session": "Create session",
+      "join_session": "Join session"
+    },
+    "input": {
+      "session_code": "Session code"
+    },
+    "section": {
+      "create": "Create new session",
+      "join": "Join session"
+    }
+  },
+
+  "join_session_form": {
+    "input": {
+      "name": "Your name"
+    },
+    "button": {
+      "join": "Join"
+    }
+  },
+
+  "session_page": {
+    "title": "Session",
+    "created_at": "Created",
+    "your_vote": "Your vote",
+    "players": "Participants",
+    "button": {
+      "reveal": "Reveal cards",
+      "reset": "Reset",
+      "copy_link": "Copy link"
+    },
+    "alert": {
+      "link_copied": "Link copied!"
+    },
+    "recent": {
+      "title": "Recent sessions"
+    },
+    "voting_results": {
+      "title": "Voting Results",
+      "vote": "Vote",
+      "vote_count": "Number of votes",
+      "voters": "Voters",
+      "no_vote": "No votes"
+    }
+  },
+
+  "cards": {
+    "you": "You",
+    "you_short": "Me",
+    "voted": "Voted",
+    "not_voted": "Did not vote"
+  },
+
+  "footer": {
+    "developedBy": "Developed by",
+    "developerLink": "https://papara.pro/",
+    "developer": "Rostislav Papara"
+  }
+}

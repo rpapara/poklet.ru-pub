@@ -1,0 +1,83 @@
+{
+  "common": {
+    "loading": "Загрузка…"
+  },
+
+  "error": {
+    "session_create_failed": "Не удалось создать сессию. Попробуйте ещё раз.",
+    "session_load_failed": "Ошибка загрузки сессии",
+    "session_not_found": "Сессия не найдена",
+    "unknown_error": "Неизвестная ошибка",
+    "player_name_taken": "Имя игрока уже занято. Пожалуйста, выберите другое имя."
+  },
+
+  "app": {
+    "title": "Poklet"
+  },
+
+  "theme": {
+    "dark": "Тёмная тема",
+    "light": "Светлая тема"
+  },
+
+  "main_page": {
+    "button": {
+      "create_session": "Создать сессию",
+      "join_session": "Присоединиться к сессии"
+    },
+    "input": {
+      "session_code": "Код сессии"
+    },
+    "section": {
+      "create": "Создать новую сессию",
+      "join": "Присоединиться к сессии"
+    }
+  },
+
+  "join_session_form": {
+    "input": {
+      "name": "Ваше имя"
+    },
+    "button": {
+      "join": "Присоединиться"
+    }
+  },
+
+  "session_page": {
+    "title": "Сессия",
+    "created_at": "Создана",
+    "your_vote": "Ваш выбор",
+    "players": "Участники",
+    "button": {
+      "reveal": "Открыть карты",
+      "reset": "Сбросить",
+      "copy_link": "Скопировать ссылку"
+    },
+    "alert": {
+      "link_copied": "Ссылка скопирована!"
+    },
+    "recent": {
+      "title": "Последние сессии"
+    },
+    "voting_results": {
+      "title": "Результаты голосования",
+      "vote": "Оценка",
+      "vote_count": "Кол-во голосов",
+      "voters": "Кто голосовал",
+      "no_vote": "Нет голосов"
+    }
+  },
+
+  "cards": {
+    "you": "Вы",
+    "you_short": "Я",
+    "voted": "Проголосовал(а)",
+    "not_voted": "Не проголосовал(а)"
+  },
+
+  "footer": {
+    "developedBy": "Разработчик:",
+    "developerLink": "https://papara-online.ru/",
+    "developer": "Ростислав Папара"
+  }
+}

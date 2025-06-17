@@ -1,0 +1,97 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: your_db
+          POSTGRES_USER: your_user
+          POSTGRES_PASSWORD: your_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      # backend
+      DB_NAME: your_db
+      DB_USER: your_user
+      DB_PASSWORD: your_password
+      SECRET_KEY: dummy
+      DEBUG: "False"
+      DB_PORT: 5432
+      STATIC_ROOT: backend/staticfiles
+      CORS_ALLOWED_ORIGINS: http://localhost
+      ALLOWED_HOSTS: localhost,127.0.0.1
+      # frontend
+      VITE_API_URL: http://localhost:8000/api
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: ⚙️ Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 📦 Install Python dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Lint backend
+        run: |
+          cd backend
+          flake8 .
+
+      - name: 🐍 Run Django tests
+        run: |
+          cd backend
+          python manage.py migrate
+          python manage.py test
+
+      - name: 📦 Install frontend dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Lint frontend
+        run: |
+          cd frontend
+          npm run lint
+
+      - name: 🧪 Run frontend tests
+        run: |
+          cd frontend
+          npm test
+
+      - name: 🏗️ Build frontend
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Check Django static and migrations
+        run: |
+          cd backend
+          python manage.py collectstatic --noinput
+          python manage.py makemigrations --check --dry-run

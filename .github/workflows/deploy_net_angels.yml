@@ -1,0 +1,121 @@
+name: Manual Deploy to NetAngels
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy via SSH
+    runs-on: ubuntu-latest
+
+    env:
+      DB_NAME: your_db
+      DB_USER: your_user
+      DB_PASSWORD: your_password
+      SECRET_KEY: dummy
+      DEBUG: "False"
+      DB_PORT: 5432
+      STATIC_ROOT: staticfiles
+      CORS_ALLOWED_ORIGINS: http://localhost
+      ALLOWED_HOSTS: localhost,127.0.0.1
+      HOST_ADDRESS: ${{ secrets.HOST_ADDRESS }}
+      HOST_PORT: ${{ secrets.HOST_PORT }}
+      HOST_USER: ${{ secrets.HOST_USER }}
+      HOST_SSH_KEY: ${{ secrets.HOST_SSH_KEY }}
+      REMOTE_FRONTEND_PATH: ${{ secrets.REMOTE_FRONTEND_PATH }}
+      NA_API_KEY: ${{ secrets.NA_API_KEY }}
+      NA_VHOST_FRONTEND_ID: ${{ secrets.NA_VHOST_FRONTEND_ID }}
+      NA_VHOST_BACKEND_ID: ${{ secrets.NA_VHOST_BACKEND_ID }}
+      REMOTE_BACKEND_APP_PATH: ${{ secrets.REMOTE_BACKEND_APP_PATH }}
+      REMOTE_BACKEND_STATIC_PATH: ${{ secrets.REMOTE_BACKEND_STATIC_PATH }}
+
+    steps:
+      - name: Check required secrets
+        run: |
+          MISSING=0
+
+          if [ -z "${{ secrets.HOST_ADDRESS }}" ]; then echo "::error ::Missing secret: HOST_ADDRESS"; MISSING=1; fi
+          if [ -z "${{ secrets.HOST_PORT }}" ]; then echo "::error ::Missing secret: HOST_PORT"; MISSING=1; fi
+          if [ -z "${{ secrets.HOST_USER }}" ]; then echo "::error ::Missing secret: HOST_USER"; MISSING=1; fi
+          if [ -z "${{ secrets.HOST_SSH_KEY }}" ]; then echo "::error ::Missing secret: HOST_SSH_KEY"; MISSING=1; fi
+          if [ -z "${{ secrets.REMOTE_FRONTEND_PATH }}" ]; then echo "::error ::Missing secret: REMOTE_FRONTEND_PATH"; MISSING=1; fi
+          if [ -z "${{ secrets.NA_API_KEY }}" ]; then echo "::error ::Missing secret: NA_API_KEY"; MISSING=1; fi
+          if [ -z "${{ secrets.NA_VHOST_FRONTEND_ID }}" ]; then echo "::error ::Missing secret: NA_VHOST_FRONTEND_ID"; MISSING=1; fi
+          if [ -z "${{ secrets.NA_VHOST_BACKEND_ID }}" ]; then echo "::error ::Missing secret: NA_VHOST_BACKEND_ID"; MISSING=1; fi
+          if [ -z "${{ secrets.REMOTE_BACKEND_APP_PATH }}" ]; then echo "::error ::Missing secret: REMOTE_BACKEND_APP_PATH"; MISSING=1; fi
+          if [ -z "${{ secrets.REMOTE_BACKEND_STATIC_PATH }}" ]; then echo "::error ::Missing secret: REMOTE_BACKEND_STATIC_PATH"; MISSING=1; fi
+
+          if [ "$MISSING" -eq 1 ]; then
+            echo "❌ One or more required secrets are missing. Exiting."
+            exit 1
+          fi
+
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${HOST_SSH_KEY}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p $HOST_PORT $HOST_ADDRESS >> ~/.ssh/known_hosts
+
+      - name: ⚙️ Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: ⚙️ Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 📦 Install Python dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+
+      - name: Upload frontend via rsync
+        run: |
+          rsync -avz --delete -e "ssh -p $HOST_PORT" frontend/dist/ $HOST_USER@$HOST_ADDRESS:$REMOTE_FRONTEND_PATH
+
+      - name: Upload backend app via rsync
+        run: |
+          rsync -avz --delete \
+            --exclude 'Dockerfile' \
+            --exclude '.dockerignore' \
+            --exclude '.env.example' \
+            --exclude '.flake8' \
+            --exclude '.gitignore' \
+            --exclude 'Makefile' \
+            --exclude 'README.md' \
+            --exclude 'requirements-dev.txt' \
+            -e "ssh -p $HOST_PORT" \
+            backend/ $HOST_USER@$HOST_ADDRESS:$REMOTE_BACKEND_APP_PATH
+
+      - name: Collect static files
+        run: |
+          cd backend
+          python manage.py collectstatic --noinput
+
+      - name: Upload backend static files via rsync
+        run: |
+          rsync -avz --delete -e "ssh -p $HOST_PORT" backend/staticfiles $HOST_USER@$HOST_ADDRESS:$REMOTE_BACKEND_STATIC_PATH
+
+      - name: Install requirements and migrate database
+        run: |
+          ssh -p $HOST_PORT $HOST_USER@$HOST_ADDRESS 'bash -s' <<ENDSSH
+          set -e
+          cd $REMOTE_BACKEND_APP_PATH
+          source ../.envrc
+          pip install -r requirements.txt
+          python manage.py migrate
+          touch ../reload
+          ENDSSH

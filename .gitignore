@@ -1,0 +1,24 @@
+# Virtual environment
+venv/
+.env/
+.venv/
+env.bak/
+.env.dev
+.env.full
+.env.local
+.history
+
+# Pytest / test cache
+.cache/
+*.log
+
+# VSCode / IDE configs
+#.vscode/
+.idea/
+
+# Mac system files
+.DS_Store
+
+infra/db/
+dist/
+project-structure*.txt

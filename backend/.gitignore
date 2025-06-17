@@ -1,0 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django-specific
+*.sqlite3
+db.sqlite3
+media/
+staticfiles/
+.env
+*.env
+
+# Virtual environment
+venv/
+.env/
+.venv/
+env/
+ENV/
+env.bak/
+
+# Pytest / test cache
+.cache/
+*.log
+
+# MyPy / Pylint
+.mypy_cache/
+.pytest_cache/
+.pylint.d/
+
+# VSCode / IDE configs
+.vscode/
+.idea/
+
+# Mac system files
+.DS_Store
+
+# Exclude all .log and .log.* files in logs/
+logs/*.log*
+# But keep the folder and special files like .keep
+!backend/logs/
+!backend/logs/.keep

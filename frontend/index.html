@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/scrum.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Poklet.ru - Scrum Poker</title>
+    <style>
+      #spinner {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 40px;
+        height: 40px;
+        border: 4px solid #ccc;
+        border-top-color: #1976d2;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        z-index: 9999;
+      }
+
+      @keyframes spin {
+        to {
+          transform: translate(-50%, -50%) rotate(360deg);
+        }
+      }
+    </style>
+    %YANDEX_METRIKA%
+  </head>
+  <body>
+    <div id="spinner"></div>
+    <div id="root"></div>
+    <script type="module">
+      window.addEventListener('DOMContentLoaded', () => {
+        const interval = setInterval(() => {
+          const root = document.getElementById('root');
+          if (root && root.children.length > 0) {
+            const spinner = document.getElementById('spinner');
+            if (spinner) spinner.remove();
+            clearInterval(interval);
+          }
+        }, 50);
+      });
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
