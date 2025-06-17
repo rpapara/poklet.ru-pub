@@ -2,6 +2,8 @@
 
 Poklet is an open-source planning poker tool created for educational purposes. The project is being developed as a demonstrational example of using modern technologies and best practices in software development.
 
+🚀 Live version available at [poklet.ru](https://poklet.ru)
+
 ## 🎯 Project Goals
 
 - Gaining hands-on experience with:
